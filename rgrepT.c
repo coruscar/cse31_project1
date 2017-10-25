@@ -59,8 +59,8 @@ int rgrep_matches(char *line, char *pattern) {
         //pattern[streak+1] == '\?'
 
 
-        if (pattern[streak] == '\\'){
-            if (pattern[streak+1] == line[lpos]){ //TODO add modifier cases
+        if (pattern[streak] == '\\') {
+            if (pattern[streak + 1] == line[lpos]) { //TODO add modifier cases
                 streak++;
                 last_slash = 1; //cheap hacky code
             } else {
@@ -74,37 +74,43 @@ int rgrep_matches(char *line, char *pattern) {
         }
 
 
-        if (pattern[streak] == '+' && last_slash == 0 && plus_exists == 0){
-            //printf("we got this far\t");
-            if (pattern[streak - 1] == line[lpos] && pattern[streak - 1] != '\\'
-                && pattern[streak + 1] <= plen) {//TODO add escape scenario
-                plus_exists = 1;
-                streak--;
-                offset++;
-                goto badconvention;
-            } else {
-                return 0;
-            }
-            //plus_exists = 1;
+        //plus solution
+        if (pattern[streak + 1] == '+') {
+            //printf("gtf 1\t");
+            int i = 0;
+            while (1) {
+                //printf("gtf 2\t");
+                //printf("line[lpos+i] = %c\t pattern[streak] = %c\t i = %i\n",line[lpos+i], pattern[streak],i);
+                if (line[lpos+i] == pattern[streak]) {//TODO fix duplicate code and modifiers
 
-//            lpos--;
-            //goto badconvention;
+                    i++;
+                } else if (i != 0){
+                    //printf("gtf 4\t");
+                    lpos = lpos + i;
+                    streak = streak + 2;
+                    break;
+                } else{
+                    break;
+                }
+            }
+            //not sure why I need this here, TODO look into this
+            if (streak >= plen + offset) {
+                return 1;
+            }
+
         }
+
 
         if (line[lpos] == pattern[streak] || pattern[streak] == '.') {//if they're equal to each other or '.'
             streak++;
 
-        } else if (plus_exists){
-            streak = streak + plus_exists + 1; //increments streak, adds offset which was temporarily taken away.
-            plus_exists = 0;//this words because we know we matched the letter before at least one time
-
-        }else {
+        } else {
             streak = 0;
             continue;
         }
 
         //it should be the only way to return 1, is to make the streak = pattern length
-        if (streak == plen + offset) {
+        if (streak >= plen + offset) {
             return 1;
         }
 
