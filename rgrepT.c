@@ -36,25 +36,26 @@ int rgrep_matches(char *line, char *pattern) {
     //inits important variables
     int streak = 0;
     int lpos = 0;
-    int pisalnum = 0;
+    //int pisalnum = 0;
     int offset = 0;
-    int plus_exists = 0;
-    int last_slash = 0;
+    //int plus_exists = 0;
+    //int last_slash = 0;
+    int degbugvar = 0;
 
     //quick check to make sure query is alphanumerical
-    for (int i = 0; i < plen; i++) if (isalnum(pattern[i])) pisalnum = 1;
+    //for (int i = 0; i < plen; i++) if (isalnum(pattern[i])) pisalnum = 1;
 
     //the main looping boy
     for (lpos = 0; lpos < llen; lpos++) {
         //I know this is low-tier coding. I'm sorry TODO FIX THIS SUBSTANDARD ATROCITY
-        badconvention:
+        //badconvention:
         //if the line is a null terminator, return 0
         if (line[lpos] == '\0') {
             return 0;
         }
-        if (line[lpos] == '\n') {
-            return 0;
-        }
+//        if (line[lpos] == '\n') {
+//            return 0;
+//        }
         //printf("pattern[%d] = %c\t\n",matching_consec_characters,pattern[matching_consec_characters]);
         //pattern[streak+1] == '\?'
 
@@ -62,27 +63,46 @@ int rgrep_matches(char *line, char *pattern) {
         if (pattern[streak] == '\\') {
             if (pattern[streak + 1] == line[lpos]) { //TODO add modifier cases
                 streak++;
-                last_slash = 1; //cheap hacky code
+                //last_slash = 1; //cheap hacky code
             } else {
                 streak = 0;
-                last_slash = 1;
+                //last_slash = 1;
                 continue;
 
             }
         } else {
-            last_slash = 0;
+            //last_slash = 0;
         }
+
+        //printf("%s",line);
+//        if (line[lpos] == 'l'){
+//            degbugvar = 1;
+//        }
+
+
 
 
         //plus solution
         if (pattern[streak + 1] == '+') {
             //printf("gtf 1\t");
             int i = 0;
+
+            //'.' implementation
+
+
+
             while (1) {
                 //printf("gtf 2\t");
-                //printf("line[lpos+i] = %c\t pattern[streak] = %c\t i = %i\n",line[lpos+i], pattern[streak],i);
-                if (line[lpos+i] == pattern[streak]) {//TODO fix duplicate code and modifiers
+                char recurring = 0;
+                if (pattern[streak] == '.'){ //half works for '.+l' or '.+o' and I don't know  why TODO fix
+                    recurring = line[lpos];
+                }
 
+                if (degbugvar){
+                    printf("line[lpos+i] = %c\t pattern[streak] = %c\t i = %i\n",line[lpos+i], pattern[streak],i);
+                }
+
+                if (line[lpos+i] == pattern[streak] || line[lpos+i] == recurring) {//TODO add modifiers
                     i++;
                 } else if (i != 0){
                     //printf("gtf 4\t");
