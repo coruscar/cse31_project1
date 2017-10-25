@@ -34,6 +34,12 @@ int rgrep_matches(char *line, char *pattern) {
     int llen = (int) strlen(line);
 
     //inits important variables
+    int additional_iterations = 0;
+    int firstpath = 0;
+    int secondpath = 0;
+
+
+
     int streak = 0;
     int lpos = 0;
     //int pisalnum = 0;
@@ -42,10 +48,13 @@ int rgrep_matches(char *line, char *pattern) {
     //int last_slash = 0;
     int degbugvar = 0;
 
+    //int secondtimearound = 0;
+
     //quick check to make sure query is alphanumerical
     //for (int i = 0; i < plen; i++) if (isalnum(pattern[i])) pisalnum = 1;
 
     //the main looping boy
+    start:
     for (lpos = 0; lpos < llen; lpos++) {
         //I know this is low-tier coding. I'm sorry TODO FIX THIS SUBSTANDARD ATROCITY
         //badconvention:
@@ -80,6 +89,44 @@ int rgrep_matches(char *line, char *pattern) {
 //        }
 
 
+        //this iteration doesn't matter, we '?' boys
+        if(pattern[streak+1]=='?'){
+
+            if(pattern[streak] == '.'){
+                if (additional_iterations == 0) {
+                    additional_iterations++;
+                } else {
+                    additional_iterations = 0;
+                }
+                if(firstpath){
+                    goto second;
+                }
+                if (secondpath){
+                    goto first;
+                }
+
+
+                //printf("m %s\n",line);
+                //printf("Why isn't this infinite\t");
+
+            }
+            if (line[lpos] == pattern[streak]){
+                first:
+                firstpath = 1;
+                //printf("v %s\n",line);
+
+                streak = streak + 2;
+                continue;
+            } else {
+                second:
+                secondpath = 1;
+
+                //printf("m %s\n",line);
+                streak = streak + 2;
+                lpos = lpos-1;
+                continue;
+            }
+        }
 
 
         //plus solution
@@ -114,9 +161,7 @@ int rgrep_matches(char *line, char *pattern) {
                 }
             }
             //not sure why I need this here, TODO look into this
-            if (streak >= plen + offset) {
-                return 1;
-            }
+            goto ending;
 
         }
 
@@ -129,12 +174,22 @@ int rgrep_matches(char *line, char *pattern) {
             continue;
         }
 
+
+        ending:
+
         //it should be the only way to return 1, is to make the streak = pattern length
+
+        //hey if it didn't work and we got some crazy ".?" going on, let's just do it again but a little differently
+
         if (streak >= plen + offset) {
             return 1;
         }
 
 
+
+    }
+    if (additional_iterations > 0){
+        goto start;
     }
     return 0;
 }
