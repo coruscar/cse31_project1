@@ -148,6 +148,7 @@ int rgrep_matches(char *line, char *pattern) {
 
         //plus solution
         if (pattern[streak + 1] == '+') {
+
             //printf("gtf 1\t");
             int i = 0;
 
@@ -155,8 +156,13 @@ int rgrep_matches(char *line, char *pattern) {
 
 
             char recurring = 0;
+            int plus_offset = 0;
+
             if (pattern[streak] == '.'){ //half works for '.+l' or '.+o' and I don't know  why TODO fix
                 recurring = line[lpos];
+            }
+            if (pattern[streak + 2] == pattern[streak]){
+                plus_offset++;//
             }
             while (1) {
                 //printf("gtf %s\t",line);
@@ -170,7 +176,11 @@ int rgrep_matches(char *line, char *pattern) {
                     i++;
                 } else if (i != 0){
                     //printf("gtf 4\t");
-                    lpos = lpos + i - 1;
+                    if (i>1) { //if this isn't here, plus_offset would cause us to incorrectly return words like "aba" with "a+ab" queries
+                        lpos = lpos + i - 1 - plus_offset;
+                    } else{
+                        lpos = lpos + i - 1;
+                    }
                     streak = streak + 2;
                     break;
                 } else{
