@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <ctype.h> //isalum
 #include <string.h>
 
 
@@ -10,6 +9,8 @@
  * Returns true if partial_line matches pattern, starting from
  * the first char of partial_line.
  */
+//I'd remove this function, but the instructions said not to mess with the skeleton.
+//It's almost halloween so I'm inclined to agree.
 int matches_leading(char *partial_line, char *pattern) {
     // Implement if desire
 
@@ -28,7 +29,6 @@ int rgrep_matches(char *line, char *pattern) {
         return 1;
     }
 
-
     //string length of pattern and line
     int plen = (int) strlen(pattern);
     int llen = (int) strlen(line);
@@ -38,17 +38,9 @@ int rgrep_matches(char *line, char *pattern) {
     int firstpath = 0;
     int secondpath = 0;
 
-
-
     int streak = 0;
     int lpos = 0;
-    //int pisalnum = 0;
     int offset = 0;
-    //int plus_exists = 0;
-    //int last_slash = 0;
-    int degbugvar = 0;
-
-    //int secondtimearound = 0;
 
     //quick check to make sure query is alphanumerical
     //for (int i = 0; i < plen; i++) if (isalnum(pattern[i])) pisalnum = 1;
@@ -56,48 +48,34 @@ int rgrep_matches(char *line, char *pattern) {
     //the main looping boy
     start:
     for (lpos = 0; lpos < llen; lpos++) {
-        //I know this is low-tier coding. I'm sorry TODO FIX THIS SUBSTANDARD ATROCITY
-        //badconvention:
         //if the line is a null terminator, return 0
         if (line[lpos] == '\0') {
             return 0;
         }
+
 //        if (line[lpos] == '\n') {
 //            return 0;
 //        }
 
-        //printf("pattern[%d] = %c\t\n",matching_consec_characters,pattern[matching_consec_characters]);
-        //pattern[streak+1] == '\?'
-
-
         if (pattern[streak] == '\\') {
             if(pattern[streak+2] == '?') {
-                //lpos++;
+                //lpos++; //definitely don't uncomment this
                 streak++;
                 goto i_have_many_questions;
             }
-            if (pattern[streak + 1] == line[lpos]) { //TODO add modifier cases
+            if (pattern[streak + 1] == line[lpos]) { //I think I added modifier cases
 
                 streak++;
-                //continue; //I just added this, remove if problems arise
-                //last_slash = 1; //cheap hacky code
+                //continue; //I just added this, remove if problems arise //UPDATE, problems arose.
             } else {
                 streak = 0;
-                //last_slash = 1;
                 continue;
-
             }
         } else {
             //last_slash = 0;
         }
 
-        //printf("%s",line);
-//        if (line[lpos] == 'l'){
-//            degbugvar = 1;
-//        }
-
-
-        //this iteration doesn't matter, we '?' boys
+        //this iteration is buck wild, we dealing with '?' now boys
         i_have_many_questions:
         if(pattern[streak+1]=='?'){
 
@@ -114,15 +92,10 @@ int rgrep_matches(char *line, char *pattern) {
                     goto first;
                 }
 
-
-                //printf("m %s\n",line);
-                //printf("Why isn't this infinite\t");
-
             }
             if (line[lpos] == pattern[streak]){
                 first:
                 firstpath = 1;
-                //printf("v %s\n",line);
 
                 streak = streak + 2;
                 if (lpos+2 >= llen){//for the single letter cases, I hope this doesn't mess anything else up
@@ -135,7 +108,6 @@ int rgrep_matches(char *line, char *pattern) {
                 second:
                 secondpath = 1;
 
-                //printf("m %s\n",line);
                 streak = streak + 2;
                 if (streak >= plen) //hacky code
                     goto ending;
@@ -145,34 +117,24 @@ int rgrep_matches(char *line, char *pattern) {
             }
         }
 
-
         //plus solution
         if (pattern[streak + 1] == '+') {
 
-            //printf("gtf 1\t");
-            int i = 0;
-
             //'.' implementation
-
-
             char recurring = 0;
+            int i = 0;
             int plus_offset = 0;
 
-            if (pattern[streak] == '.'){ //half works for '.+l' or '.+o' and I don't know  why TODO fix
+            if (pattern[streak] == '.'){
                 recurring = line[lpos];
             }
+
             if (pattern[streak + 2] == pattern[streak]){
-                plus_offset++;//
+                plus_offset++;
             }
             while (1) {
-                //printf("gtf %s\t",line);
 
-
-                if (degbugvar){
-                    printf("line[lpos+i] = %c\t pattern[streak] = %c\t i = %i\n",line[lpos+i], pattern[streak],i);
-                }
-
-                if (line[lpos+i] == pattern[streak] || line[lpos+i] == recurring) {//TODO add modifiers
+                if (line[lpos+i] == pattern[streak] || line[lpos+i] == recurring) {//I think this now works with modifiers
                     i++;
                 } else if (i != 0){
                     //printf("gtf 4\t");
@@ -187,11 +149,9 @@ int rgrep_matches(char *line, char *pattern) {
                     break;
                 }
             }
-            //not sure why I need this here, TODO look into this
+            //little silly, but whatever
             goto ending;
-
         }
-
 
         if (line[lpos] == pattern[streak] || pattern[streak] == '.') {//if they're equal to each other or '.'
             streak++;
@@ -203,16 +163,10 @@ int rgrep_matches(char *line, char *pattern) {
 
 
         ending:
-
         //it should be the only way to return 1, is to make the streak = pattern length
-
-
         if (streak >= plen + offset) {
             return 1;
         }
-
-
-
     }
     //hey if it didn't work and we got some crazy ".?" going on, let's just do it again but a little differently
     if (additional_iterations > 0){
